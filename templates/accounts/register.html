@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Register – CleanPool{% endblock %}
+{% block content %}
+<div class="card" style="max-width:480px;margin:auto">
+  <h1>Create an account</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "accounts/_form.html" %}
+    <button class="btn" type="submit">Register</button>
+  </form>
+  <p class="help">Already registered? <a href="{% url 'accounts:login' %}">Log in</a></p>
+</div>
+{% endblock %}
