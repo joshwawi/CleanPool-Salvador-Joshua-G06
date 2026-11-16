@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Client Dashboard{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Welcome, {{ user.full_name }}</h1>
+  <p>Join pooled cleaning orders with nearby businesses and unlock volume discounts.</p>
+</div>
+<div class="stats">
+  <div class="stat"><b>0</b>My businesses</div>
+  <div class="stat"><b>0</b>Active pools</div>
+  <div class="stat"><b>0</b>Pending payments</div>
+</div>
+<p class="help">Business registration, pooling and payments arrive in the next phases.</p>
+{% endblock %}
