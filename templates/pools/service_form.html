@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:560px">
+  <h1>{{ heading }}</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      {% if field.name == 'is_published' %}
+        <label><input type="checkbox" name="{{ field.html_name }}" style="width:auto" {% if field.value %}checked{% endif %}> {{ field.label }}</label>
+        <div class="help">{{ field.help_text }}</div>
+      {% else %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+      {% endif %}
+      {{ field.errors }}
+    {% endfor %}
+    {{ form.non_field_errors }}
+    <button class="btn" type="submit">Save</button>
+    <a class="btn secondary" href="{% url 'pools:service_list' %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
