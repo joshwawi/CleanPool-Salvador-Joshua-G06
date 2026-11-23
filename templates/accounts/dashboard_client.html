@@ -6,9 +6,16 @@
   <p>Join pooled cleaning orders with nearby businesses and unlock volume discounts.</p>
 </div>
 <div class="stats">
-  <div class="stat"><b>0</b>My businesses</div>
-  <div class="stat"><b>0</b>Active pools</div>
-  <div class="stat"><b>0</b>Pending payments</div>
+  <div class="stat"><b>{{ pool_count }}</b>Pools I joined</div>
+  <div class="stat"><b>{{ active_count }}</b>Active pools</div>
+  <div class="stat"><b>₱{{ estimated_spend }}</b>Estimated spend</div>
 </div>
-<p class="help">Business registration, pooling and payments arrive in the next phases.</p>
+<div class="card" style="margin-top:1rem">
+  <h2>Upcoming cleanings</h2>
+  {% for m in upcoming %}
+    <p><a href="{% url 'pools:pool_detail' m.pool_id %}">{{ m.pool.title }}</a> – {{ m.pool.scheduled_date|date:"M d, Y" }} ({{ m.pool.get_status_display }})</p>
+  {% empty %}<p class="help">Nothing scheduled yet.</p>{% endfor %}
+  <a class="btn" href="{% url 'pools:pool_list' %}">Browse open pools</a>
+  <a class="btn secondary" href="{% url 'pools:pool_create' %}">Start a pool</a>
+</div>
 {% endblock %}

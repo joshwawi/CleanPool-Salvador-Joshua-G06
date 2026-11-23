@@ -6,7 +6,9 @@
   <div class="stat"><b>{{ total_users }}</b>Total users</div>
   <div class="stat"><b>{{ client_count }}</b>Clients</div>
   <div class="stat"><b>{{ provider_count }}</b>Providers</div>
+  <div class="stat"><b>{{ pool_count }}</b>Pools ({{ open_pool_count }} open)</div>
 </div>
+<p><a class="btn" href="{% url 'pools:admin_pools' %}">Manage all pools</a></p>
 <div class="card" style="margin-top:1rem">
   <h2>Recent registrations</h2>
   <table>
