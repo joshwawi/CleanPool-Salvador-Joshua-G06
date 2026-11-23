@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Confirm delete{% endblock %}
+{% block content %}
+<div class="card" style="max-width:520px">
+  <h1>Delete {{ what }}?</h1>
+  <p>Are you sure you want to delete <b>{{ obj }}</b>? This cannot be undone.</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn" style="background:var(--err)" type="submit">Yes, delete</button>
+    <a class="btn secondary" href="{% url back obj.pk %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

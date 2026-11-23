@@ -43,9 +43,9 @@
   {% if user.is_authenticated %}
     <span class="role">{{ user.get_role_display }}</span>
     <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
-    {% if user.role == 'client' %}<a href="#">My Businesses</a><a href="#">Pools</a>{% endif %}
-    {% if user.role == 'provider' %}<a href="#">My Services</a><a href="#">Bookings</a>{% endif %}
-    {% if user.role == 'admin' %}<a href="#">Verify Providers</a><a href="#">Payments</a><a href="/admin/">Django Admin</a>{% endif %}
+    {% if user.role == 'client' %}<a href="{% url 'pools:pool_list' %}">Browse Pools</a><a href="{% url 'pools:my_pools' %}">My Pools</a>{% endif %}
+    {% if user.role == 'provider' %}<a href="{% url 'pools:service_list' %}">My Services</a><a href="{% url 'pools:provider_pools' %}">Pool Requests</a>{% endif %}
+    {% if user.role == 'admin' %}<a href="{% url 'pools:admin_pools' %}">All Pools</a><a href="/admin/">Django Admin</a>{% endif %}
     <a href="{% url 'accounts:profile' %}">Profile</a>
     <form method="post" action="{% url 'accounts:logout' %}" style="margin:0">{% csrf_token %}<button type="submit">Log out</button></form>
   {% else %}

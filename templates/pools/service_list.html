@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}My Services{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>My services</h1>
+  <a class="btn" href="{% url 'pools:service_create' %}">+ New service</a>
+  {% if services %}
+  <table style="margin-top:1rem">
+    <tr><th>Service</th><th>Area</th><th>Price / sqm</th><th>Tiers</th><th>Status</th><th></th></tr>
+    {% for s in services %}
+    <tr>
+      <td>{{ s.title }}<div class="help">{{ s.get_category_display }}</div></td>
+      <td>{{ s.service_area }}</td>
+      <td>₱{{ s.price_per_sqm }}</td>
+      <td>{{ s.tiers.all|length }}</td>
+      <td>{% if s.is_published %}Published{% else %}Draft{% endif %}</td>
+      <td><a href="{% url 'pools:service_detail' s.pk %}">Manage</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="help">You have not created any services yet.</p>{% endif %}
+</div>
+{% endblock %}

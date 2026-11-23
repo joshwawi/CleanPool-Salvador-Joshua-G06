@@ -1,0 +1,15 @@
+<table>
+  <tr><th>Pool</th><th>Service</th><th>Date</th><th>Businesses</th><th>Rate / sqm</th><th>Status</th><th></th></tr>
+  {% for p in pools %}
+  <tr>
+    <td>{{ p.title }}<div class="help">{{ p.location }}</div></td>
+    <td>{{ p.service.title }}</td>
+    <td>{{ p.scheduled_date|date:"M d, Y" }}</td>
+    <td>{{ p.participant_count }}/{{ p.max_participants }}</td>
+    <td>₱{{ p.rate_per_sqm }}{% if p.current_discount %} <span class="help">(-{{ p.current_discount }}%)</span>{% endif %}</td>
+    <td>{{ p.get_status_display }}</td>
+    <td><a href="{% url 'pools:pool_detail' p.pk %}">View</a></td>
+  </tr>
+  {% empty %}<tr><td colspan="7" class="help">No pools found.</td></tr>
+  {% endfor %}
+</table>

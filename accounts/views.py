@@ -10,6 +10,8 @@ from django.views.decorators.http import require_POST
 
 from .decorators import role_required
 from .forms import LoginForm, ProfileForm, RegistrationForm
+from pools.models import Pool, Service
+
 from .models import User
 
 ROLE_HOME = {
@@ -83,12 +85,28 @@ def dashboard_redirect(request):
 
 @role_required(User.ROLE_CLIENT)
 def client_dashboard(request):
-    return render(request, "accounts/dashboard_client.html")
+    memberships = request.user.pool_memberships.select_related("pool", "pool__service")
+    active = [m for m in memberships if m.pool.status in (Pool.STATUS_OPEN, Pool.STATUS_CONFIRMED)]
+    ctx = {
+        "pool_count": len(memberships),
+        "active_count": len(active),
+        "estimated_spend": sum((m.estimated_cost for m in active), 0),
+        "upcoming": sorted(active, key=lambda m: m.pool.scheduled_date)[:5],
+    }
+    return render(request, "accounts/dashboard_client.html", ctx)
 
 
 @role_required(User.ROLE_PROVIDER)
 def provider_dashboard(request):
-    return render(request, "accounts/dashboard_provider.html")
+    services = Service.objects.filter(provider=request.user)
+    ctx = {
+        "service_count": services.count(),
+        "published_count": services.filter(is_published=True).count(),
+        "recent_services": services[:5],
+        "pending_count": Pool.objects.filter(service__provider=request.user, status=Pool.STATUS_OPEN).count(),
+        "confirmed_count": Pool.objects.filter(service__provider=request.user, status=Pool.STATUS_CONFIRMED).count(),
+    }
+    return render(request, "accounts/dashboard_provider.html", ctx)
 
 
 @role_required(User.ROLE_ADMIN)
@@ -97,6 +115,8 @@ def admin_dashboard(request):
         "total_users": User.objects.count(),
         "client_count": User.objects.filter(role=User.ROLE_CLIENT).count(),
         "provider_count": User.objects.filter(role=User.ROLE_PROVIDER).count(),
+        "pool_count": Pool.objects.count(),
+        "open_pool_count": Pool.objects.filter(status=Pool.STATUS_OPEN).count(),
         "recent_users": User.objects.order_by("-created_at")[:10],
     }
     return render(request, "accounts/dashboard_admin.html", ctx)

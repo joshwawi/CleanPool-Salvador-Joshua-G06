@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}My Pools{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>My pools</h1>
+  <a class="btn" href="{% url 'pools:pool_create' %}">+ Start a new pool</a>
+  <a class="btn secondary" href="{% url 'pools:pool_list' %}">Browse open pools</a>
+  <table style="margin-top:1rem">
+    <tr><th>Pool</th><th>Date</th><th>My business</th><th>My area</th><th>Est. cost</th><th>Status</th><th></th></tr>
+    {% for m in memberships %}
+    <tr>
+      <td>{{ m.pool.title }}{% if m.is_creator %} <span class="help">(created by me)</span>{% endif %}</td>
+      <td>{{ m.pool.scheduled_date|date:"M d, Y" }}</td>
+      <td>{{ m.business_name }}</td>
+      <td>{{ m.area_sqm }} sqm</td>
+      <td>₱{{ m.estimated_cost }}</td>
+      <td>{{ m.pool.get_status_display }}</td>
+      <td><a href="{% url 'pools:pool_detail' m.pool_id %}">View</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="7" class="help">You have not joined any pool yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
