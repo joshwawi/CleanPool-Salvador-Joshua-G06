@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ pool.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ pool.title }}</h1>
+  <dl>
+    <dt>Status</dt><dd><b>{{ pool.get_status_display }}</b></dd>
+    <dt>Service</dt><dd>{{ pool.service.title }} by {{ pool.service.provider.full_name }}</dd>
+    <dt>Location</dt><dd>{{ pool.location }}</dd>
+    <dt>Date</dt><dd>{{ pool.scheduled_date|date:"F d, Y" }}</dd>
+    <dt>Businesses</dt><dd>{{ pool.participant_count }} of {{ pool.max_participants }} ({{ pool.spots_left }} spot{{ pool.spots_left|pluralize }} left)</dd>
+    <dt>Total area</dt><dd>{{ pool.total_area }} sqm</dd>
+    <dt>Current rate</dt><dd><b>₱{{ pool.rate_per_sqm }}/sqm</b> (base ₱{{ pool.service.price_per_sqm }}{% if pool.current_discount %}, {{ pool.current_discount }}% pool discount{% endif %})</dd>
+    {% if pool.next_tier and pool.is_open %}<dt>Next discount</dt><dd>{{ pool.next_tier.discount_percent }}% off at {{ pool.next_tier.min_participants }} businesses (₱{{ pool.next_tier.discounted_price }}/sqm)</dd>{% endif %}
+    {% if pool.notes %}<dt>Notes</dt><dd>{{ pool.notes }}</dd>{% endif %}
+  </dl>
+
+  {% if user.role == 'client' and is_owner and pool.is_open %}
+    <a class="btn" href="{% url 'pools:pool_edit' pool.pk %}">Edit pool</a>
+    <form method="post" action="{% url 'pools:pool_cancel' pool.pk %}" style="display:inline">{% csrf_token %}<button class="btn secondary" type="submit">Cancel pool</button></form>
+  {% endif %}
+  {% if user.role == 'client' and is_owner %}<a class="btn secondary" href="{% url 'pools:pool_delete' pool.pk %}">Delete pool</a>{% endif %}
+
+  {% if user.role == 'provider' %}
+    {% if pool.is_open %}
+      {% if can_confirm %}
+      <form method="post" action="{% url 'pools:pool_action' pool.pk 'confirm' %}" style="display:inline">{% csrf_token %}<button class="btn" type="submit">Confirm pool</button></form>
+      {% else %}<span class="help">Needs at least 2 businesses before it can be confirmed.</span>{% endif %}
+    {% endif %}
+    {% if pool.status == 'confirmed' %}
+      <form method="post" action="{% url 'pools:pool_action' pool.pk 'complete' %}" style="display:inline">{% csrf_token %}<button class="btn" type="submit">Mark completed</button></form>
+    {% endif %}
+    {% if pool.status == 'open' or pool.status == 'confirmed' %}
+      <form method="post" action="{% url 'pools:pool_action' pool.pk 'decline' %}" style="display:inline">{% csrf_token %}<button class="btn secondary" type="submit">Decline / cancel</button></form>
+    {% endif %}
+  {% endif %}
+  {% if user.role == 'admin' and pool.status == 'open' or user.role == 'admin' and pool.status == 'confirmed' %}
+    <form method="post" action="{% url 'pools:pool_action' pool.pk 'cancel' %}" style="display:inline">{% csrf_token %}<button class="btn secondary" type="submit">Cancel pool (admin)</button></form>
+  {% endif %}
+</div>
+
+{% if can_see_members %}
+<div class="card">
+  <h2>Participating businesses</h2>
+  <table>
+    <tr><th>Business</th><th>Area</th><th>Est. cost</th><th></th></tr>
+    {% for m in members %}
+    <tr>
+      <td>{{ m.business_name }}{% if m.is_creator %} <span class="help">(organiser)</span>{% endif %}<div class="help">{{ m.client.full_name }}</div></td>
+      <td>{{ m.area_sqm }} sqm</td><td>₱{{ m.estimated_cost }}</td>
+      <td>{% if m.client_id == user.id and pool.is_open %}
+        <a href="{% url 'pools:membership_edit' m.pk %}">Edit</a>
+        {% if not m.is_creator %}
+        <form method="post" action="{% url 'pools:membership_leave' m.pk %}" style="display:inline">{% csrf_token %}<button style="color:var(--err);background:none;border:0;cursor:pointer">Leave</button></form>
+        {% endif %}
+      {% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% if tiers %}
+<div class="card">
+  <h2>Volume discount tiers</h2>
+  <table>
+    <tr><th>Businesses</th><th>Discount</th><th>Price / sqm</th></tr>
+    {% for t in tiers %}<tr><td>{{ t.min_participants }}+</td><td>{{ t.discount_percent }}%</td><td>₱{{ t.discounted_price }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% if can_join %}
+<div class="card" style="max-width:520px">
+  <h2>Join this pool</h2>
+  <form method="post" action="{% url 'pools:pool_join' pool.pk %}" novalidate>
+    {% csrf_token %}
+    {% include "accounts/_form.html" with form=join_form %}
+    <button class="btn" type="submit">Join pool</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
