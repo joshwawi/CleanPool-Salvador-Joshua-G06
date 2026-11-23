@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ service.title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ service.title }}</h1>
+  <dl>
+    <dt>Category</dt><dd>{{ service.get_category_display }}</dd>
+    <dt>Service area</dt><dd>{{ service.service_area }}</dd>
+    <dt>Base price</dt><dd>₱{{ service.price_per_sqm }} per sqm</dd>
+    <dt>Status</dt><dd>{% if service.is_published %}Published{% else %}Draft (not visible to clients){% endif %}</dd>
+    <dt>Description</dt><dd>{{ service.description|default:"—" }}</dd>
+  </dl>
+  <a class="btn" href="{% url 'pools:service_edit' service.pk %}">Edit</a>
+  <a class="btn secondary" href="{% url 'pools:service_delete' service.pk %}">Delete</a>
+  <a class="btn secondary" href="{% url 'pools:service_list' %}">Back</a>
+</div>
+<div class="card">
+  <h2>Volume discount tiers</h2>
+  {% if tiers %}
+  <table>
+    <tr><th>Businesses in pool</th><th>Discount</th><th>Price / sqm</th><th></th></tr>
+    {% for t in tiers %}
+    <tr>
+      <td>{{ t.min_participants }}+</td><td>{{ t.discount_percent }}%</td><td>₱{{ t.discounted_price }}</td>
+      <td><form method="post" action="{% url 'pools:tier_delete' t.pk %}" style="margin:0">{% csrf_token %}<button style="color:var(--err);background:none;border:0;cursor:pointer">Remove</button></form></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="help">No tiers yet. Pools on this service get no discount.</p>{% endif %}
+  <form method="post" action="{% url 'pools:tier_add' service.pk %}" style="margin-top:1rem;max-width:360px">
+    {% csrf_token %}
+    <label for="{{ tier_form.min_participants.id_for_label }}">{{ tier_form.min_participants.label }}</label>{{ tier_form.min_participants }}
+    <label for="{{ tier_form.discount_percent.id_for_label }}">{{ tier_form.discount_percent.label }}</label>{{ tier_form.discount_percent }}
+    <button class="btn" type="submit">Add tier</button>
+  </form>
+</div>
+{% endblock %}

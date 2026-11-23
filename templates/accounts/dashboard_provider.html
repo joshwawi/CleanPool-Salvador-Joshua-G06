@@ -7,8 +7,14 @@
   <p class="help">Providers must be verified by an administrator before publishing services (BR-06).</p>
 </div>
 <div class="stats">
-  <div class="stat"><b>0</b>Published services</div>
-  <div class="stat"><b>0</b>Pending bookings</div>
-  <div class="stat"><b>0</b>Upcoming jobs</div>
+  <div class="stat"><b>{{ service_count }}</b>My services</div>
+  <div class="stat"><b>{{ published_count }}</b>Published services</div>
+</div>
+<div class="card" style="margin-top:1rem">
+  <h2>Recent services</h2>
+  {% for s in recent_services %}
+    <p><a href="{% url 'pools:service_detail' s.pk %}">{{ s.title }}</a> – {% if s.is_published %}Published{% else %}Draft{% endif %}</p>
+  {% empty %}<p class="help">No services yet.</p>{% endfor %}
+  <a class="btn" href="{% url 'pools:service_create' %}">+ New service</a>
 </div>
 {% endblock %}

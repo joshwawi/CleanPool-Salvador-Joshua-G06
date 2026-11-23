@@ -10,6 +10,8 @@ from django.views.decorators.http import require_POST
 
 from .decorators import role_required
 from .forms import LoginForm, ProfileForm, RegistrationForm
+from pools.models import Service
+
 from .models import User
 
 ROLE_HOME = {
@@ -88,7 +90,13 @@ def client_dashboard(request):
 
 @role_required(User.ROLE_PROVIDER)
 def provider_dashboard(request):
-    return render(request, "accounts/dashboard_provider.html")
+    services = Service.objects.filter(provider=request.user)
+    ctx = {
+        "service_count": services.count(),
+        "published_count": services.filter(is_published=True).count(),
+        "recent_services": services[:5],
+    }
+    return render(request, "accounts/dashboard_provider.html", ctx)
 
 
 @role_required(User.ROLE_ADMIN)
