@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:600px">
+  <h1>{{ heading }}</h1>
+  {% if form.fields.service.queryset.count == 0 %}<div class="msg info">No providers have published a service yet.</div>{% endif %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "accounts/_form.html" %}
+    <button class="btn" type="submit">Save</button>
+    <a class="btn secondary" href="{% url 'pools:my_pools' %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

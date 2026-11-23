@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Browse Pools{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Open pools</h1>
+  <p class="help">Join a pool to share a provider's booking with nearby businesses and unlock volume discounts.</p>
+  <form method="get" style="display:flex;gap:.5rem;align-items:end;max-width:520px">
+    <div style="flex:1"><label for="q">Search</label><input id="q" name="q" value="{{ q }}" placeholder="Title, location, service or area"></div>
+    <button class="btn" type="submit" style="margin:0">Search</button>
+  </form>
+  <a class="btn secondary" href="{% url 'pools:pool_create' %}">+ Start a new pool</a>
+</div>
+<div class="card">
+  {% include "pools/_pool_table.html" %}
+</div>
+{% endblock %}

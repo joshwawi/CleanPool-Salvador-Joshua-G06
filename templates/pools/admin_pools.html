@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}All Pools{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>All pools</h1>
+  <form method="get" style="max-width:300px">
+    <label for="status">Filter by status</label>
+    <select id="status" name="status" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for v, l in status_choices %}<option value="{{ v }}" {% if v == status %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+  </form>
+  <table style="margin-top:1rem">
+    <tr><th>Pool</th><th>Organiser</th><th>Provider</th><th>Date</th><th>Businesses</th><th>Status</th><th></th></tr>
+    {% for p in pools %}
+    <tr>
+      <td>{{ p.title }}</td><td>{{ p.created_by.full_name }}</td><td>{{ p.service.provider.full_name }}</td>
+      <td>{{ p.scheduled_date|date:"M d, Y" }}</td><td>{{ p.participant_count }}/{{ p.max_participants }}</td><td>{{ p.get_status_display }}</td>
+      <td><a href="{% url 'pools:pool_detail' p.pk %}">View</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="7" class="help">No pools found.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Update my share{% endblock %}
+{% block content %}
+<div class="card" style="max-width:520px">
+  <h1>Update my share</h1>
+  <p class="help">Pool: {{ pool.title }}</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include "accounts/_form.html" %}
+    <button class="btn" type="submit">Save</button>
+    <a class="btn secondary" href="{% url 'pools:pool_detail' pool.pk %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
