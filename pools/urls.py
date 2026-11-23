@@ -27,6 +27,6 @@ urlpatterns = [
     path("memberships/<int:pk>/leave/", views.membership_leave, name="membership_leave"),
     # Provider / admin
     path("provider/pools/", views.provider_pools, name="provider_pools"),
-    path("pools/<int:pk>/<str:action>/", views.pool_action, name="pool_action"),
+    path("pools/<int:pk>/action/<str:action>/", views.pool_action, name="pool_action"),
     path("manage/pools/", views.admin_pools, name="admin_pools"),
 ]

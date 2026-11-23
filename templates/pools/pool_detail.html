@@ -48,7 +48,7 @@
     <tr>
       <td>{{ m.business_name }}{% if m.is_creator %} <span class="help">(organiser)</span>{% endif %}<div class="help">{{ m.client.full_name }}</div></td>
       <td>{{ m.area_sqm }} sqm</td><td>₱{{ m.estimated_cost }}</td>
-      <td>{% if m.client_id == user.id and pool.is_open %}
+      <td>{% if m.client_id == user.pk and pool.is_open %}
         <a href="{% url 'pools:membership_edit' m.pk %}">Edit</a>
         {% if not m.is_creator %}
         <form method="post" action="{% url 'pools:membership_leave' m.pk %}" style="display:inline">{% csrf_token %}<button style="color:var(--err);background:none;border:0;cursor:pointer">Leave</button></form>

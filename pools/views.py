@@ -113,7 +113,7 @@ def _can_view_pool(user, pool):
     if user.role == User.ROLE_ADMIN:
         return True
     if user.role == User.ROLE_PROVIDER:
-        return pool.service.provider_id == user.id
+        return pool.service.provider_id == user.pk
     if user.role == User.ROLE_CLIENT:
         return pool.is_open or pool.memberships.filter(client=user).exists()
     return False
@@ -172,7 +172,7 @@ def pool_detail(request, pk):
         "join_form": MembershipForm() if can_join else None,
         "members": pool.memberships.select_related("client"),
         "tiers": pool.service.tiers.all(),
-        "is_owner": pool.created_by_id == user.id,
+        "is_owner": pool.created_by_id == user.pk,
         "can_see_members": user.role != User.ROLE_CLIENT or mine is not None,
         "can_confirm": pool.is_open and pool.participant_count >= Pool.MIN_TO_CONFIRM,
     }
@@ -295,7 +295,7 @@ def pool_action(request, pk, action):
     """Status changes: provider confirm/decline/complete own pools; admin may cancel any pool."""
     pool = get_object_or_404(Pool, pk=pk)
     user = request.user
-    if user.role == User.ROLE_PROVIDER and pool.service.provider_id == user.id:
+    if user.role == User.ROLE_PROVIDER and pool.service.provider_id == user.pk:
         allowed = {"confirm", "decline", "complete"}
     elif user.role == User.ROLE_ADMIN:
         allowed = {"cancel"}
